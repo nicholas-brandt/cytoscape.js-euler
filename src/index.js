@@ -1,14 +1,14 @@
-const Euler = require('./euler');
+import Euler from './euler/index.js';
 
 // registers the extension on a cytoscape lib ref
-let register = function( cytoscape ){
-  if( !cytoscape ){ return; } // can't register if cytoscape unspecified
+let register = function (cytoscape) {
+  if (!cytoscape) { return; } // can't register if cytoscape unspecified
 
-  cytoscape( 'layout', 'euler', Euler ); // register with cytoscape.js
+  cytoscape('layout', 'euler', Euler); // register with cytoscape.js
 };
 
-if( typeof cytoscape !== 'undefined' ){ // expose to global cytoscape (i.e. window.cytoscape)
-  register( cytoscape );
+if (typeof cytoscape !== 'undefined') { // expose to global cytoscape (i.e. window.cytoscape)
+  register(cytoscape);
 }
 
-module.exports = register;
+export default register;

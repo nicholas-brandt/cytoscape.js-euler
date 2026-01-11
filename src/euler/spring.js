@@ -1,4 +1,4 @@
-const assign = require('../assign');
+import assign from '../assign';
 
 const defaults = Object.freeze({
   source: null,
@@ -8,11 +8,11 @@ const defaults = Object.freeze({
   weight: 1
 });
 
-function makeSpring( spring ){
+export function makeSpring( spring ){
   return assign( {}, defaults, spring );
 }
 
-function applySpring( spring ){
+export function applySpring( spring ){
   let body1 = spring.source,
       body2 = spring.target,
       length = spring.length < 0 ? defaults.length : spring.length,
@@ -35,5 +35,3 @@ function applySpring( spring ){
   body2.force.x -= coeff * dx;
   body2.force.y -= coeff * dy;
 }
-
-module.exports = { makeSpring, applySpring };

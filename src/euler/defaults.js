@@ -41,4 +41,4 @@ const defaults = Object.freeze({
   timeStep: 20
 });
 
-module.exports = defaults;
+export default defaults;

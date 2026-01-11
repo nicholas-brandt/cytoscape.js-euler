@@ -1,7 +1,7 @@
 /**
  * Internal data structure to represent 2D QuadTree node
  */
-module.exports = function Node() {
+export default function Node() {
   // body stored inside this node. In quad tree only leaf nodes (by construction)
   // contain boides:
   this.body = null;

@@ -1,4 +1,4 @@
-module.exports = function( bb, cy ){
+export default function( bb, cy ){
   if( bb == null ){
     bb = { x1: 0, y1: 0, w: cy.width(), h: cy.height() };
   } else { // copy

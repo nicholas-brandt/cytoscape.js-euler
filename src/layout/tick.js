@@ -1,6 +1,6 @@
 const nop = function(){};
 
-let tick = function( state ){
+export let tick = function( state ){
   let s = state;
   let l = state.layout;
 
@@ -20,7 +20,7 @@ let tick = function( state ){
   return !s.infinite && ( tickIndicatesDone || s.tickIndex >= s.maxIterations || duration >= s.maxSimulationTime );
 };
 
-let multitick = function( state, onNotDone = nop, onDone = nop ){
+export let multitick = function( state, onNotDone = nop, onDone = nop ){
   let done = false;
   let s = state;
 
@@ -36,5 +36,3 @@ let multitick = function( state, onNotDone = nop, onDone = nop ){
     onDone();
   }
 };
-
-module.exports = { tick, multitick };

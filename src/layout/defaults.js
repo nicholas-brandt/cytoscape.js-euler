@@ -1,6 +1,6 @@
 // general default options for force-directed layout
 
-module.exports = Object.freeze({
+export default Object.freeze({
   animate: true, // whether to show the layout as it's running; special 'end' value makes the layout animate like a discrete layout
   refresh: 10, // number of ticks per frame; higher is faster but more jerky
   maxIterations: 1000, // max iterations before the layout will bail out

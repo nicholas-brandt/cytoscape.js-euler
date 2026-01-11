@@ -2,8 +2,8 @@
 // http://www.eecs.berkeley.edu/~demmel/cs267/lecture26/lecture26.html
 // http://en.wikipedia.org/wiki/Barnes%E2%80%93Hut_simulation
 
-const Node = require('./node');
-const InsertStack = require('./insertStack');
+import Node from './node';
+import InsertStack from './insertStack';
 
 const resetVec = v => { v.x = 0; v.y = 0; };
 
@@ -15,7 +15,7 @@ const isSamePosition = (p1, p2) => {
   return dx < threshold && dy < threshold;
 };
 
-function makeQuadtree(){
+export function makeQuadtree(){
   let updateQueue = [],
     insertStack = new InsertStack(),
     nodesCache = [],
@@ -311,5 +311,3 @@ function setChild(node, idx, child) {
   else if (idx === 2) node.quad2 = child;
   else if (idx === 3) node.quad3 = child;
 }
-
-module.exports = { makeQuadtree };

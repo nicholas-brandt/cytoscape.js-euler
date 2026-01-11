@@ -10,7 +10,7 @@ const copyVec = v => ({ x: v.x, y: v.y });
 const getValue = ( val, def ) => val != null ? val : def;
 const getVec = ( vec, def ) => copyVec( getValue( vec, def ) );
 
-function makeBody( opts ){
+export function makeBody( opts ){
   let b = {};
 
   b.pos = getVec( opts.pos, defaults.pos );
@@ -22,5 +22,3 @@ function makeBody( opts ){
 
   return b;
 }
-
-module.exports = { makeBody };

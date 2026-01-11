@@ -1,8 +1,8 @@
-const { integrate } = require('./integrate');
-const { applyDrag } = require('./drag');
-const { applySpring } = require('./spring');
+import { integrate } from './integrate';
+import { applyDrag } from './drag';
+import { applySpring } from './spring';
 
-function tick({ bodies, springs, quadtree, timeStep, gravity, theta, dragCoeff, pull }){
+export function tick({ bodies, springs, quadtree, timeStep, gravity, theta, dragCoeff, pull }){
   // update body from scratch in case of any changes
   bodies.forEach( body => {
     let p = body._scratch;
@@ -44,5 +44,3 @@ function tick({ bodies, springs, quadtree, timeStep, gravity, theta, dragCoeff, 
 
   return movement;
 }
-
-module.exports = { tick };

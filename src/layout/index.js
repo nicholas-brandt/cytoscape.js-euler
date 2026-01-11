@@ -2,47 +2,44 @@
 A generic continuous layout class
 */
 
-const assign = require('../assign');
-const defaults = require('./defaults');
-const makeBoundingBox = require('./make-bb');
-const { setInitialPositionState, refreshPositions, getNodePositionData } = require('./position');
-const { multitick } = require('./tick');
+import assign from '../assign';
+import defaults from './defaults';
+import makeBoundingBox from './make-bb';
+import { setInitialPositionState, refreshPositions, getNodePositionData } from './position';
+import { multitick } from './tick';
 
-class Layout {
-  constructor( options ){
-    let o = this.options = assign( {}, defaults, options );
+export default class Layout {
+  constructor(options) {
+    let o = this.options = assign({}, defaults, options);
 
-		let nodes = o.eles.nodes();
-		// prevent infinite loop and memory overflow when nodes occupy the same position
-		if(!o.randomize)
-		{
-			nodes = nodes.sort((a,b)=>a.position().x-b.position().x);
-			const prev = {x: 0, y: 0};
-			const pos = {};
-			nodes.forEach(n=>
-			{
-				Object.assign(pos,n.position());
-				if(Math.abs(prev.x - pos.x) < o.theta && Math.abs(prev.y - pos.y) < o.theta)
-				{
-					n.position({x: Math.random()*100, y: Math.random()*100});
-				}
-				Object.assign(prev,pos);
-			});
-		}
+    let nodes = o.eles.nodes();
+    // prevent infinite loop and memory overflow when nodes occupy the same position
+    if (!o.randomize) {
+      nodes = nodes.sort((a, b) => a.position().x - b.position().x);
+      const prev = { x: 0, y: 0 };
+      const pos = {};
+      nodes.forEach(n => {
+        Object.assign(pos, n.position());
+        if (Math.abs(prev.x - pos.x) < o.theta && Math.abs(prev.y - pos.y) < o.theta) {
+          n.position({ x: Math.random() * 100, y: Math.random() * 100 });
+        }
+        Object.assign(prev, pos);
+      });
+    }
 
-    let s = this.state = assign( {}, o, {
+    let s = this.state = assign({}, o, {
       layout: this,
       nodes,
       edges: o.eles.edges(),
       tickIndex: 0,
       firstUpdate: true
-    } );
+    });
 
     s.animateEnd = o.animate && o.animate === 'end';
     s.animateContinuously = o.animate && !s.animateEnd;
   }
 
-  run(){
+  run() {
     let l = this;
     let s = this.state;
 
@@ -51,46 +48,46 @@ class Layout {
     s.startTime = Date.now();
     s.running = true;
 
-    s.currentBoundingBox = makeBoundingBox( s.boundingBox, s.cy );
+    s.currentBoundingBox = makeBoundingBox(s.boundingBox, s.cy);
 
-    if( s.ready ){ l.one( 'ready', s.ready ); }
-    if( s.stop ){ l.one( 'stop', s.stop ); }
+    if (s.ready) { l.one('ready', s.ready); }
+    if (s.stop) { l.one('stop', s.stop); }
 
-    s.nodes.forEach( n => setInitialPositionState( n, s ) );
+    s.nodes.forEach(n => setInitialPositionState(n, s));
 
-    l.prerun( s );
+    l.prerun(s);
 
-    if( s.animateContinuously ){
+    if (s.animateContinuously) {
       let ungrabify = node => {
-        if( !s.ungrabifyWhileSimulating ){ return; }
+        if (!s.ungrabifyWhileSimulating) { return; }
 
-        let grabbable = getNodePositionData( node, s ).grabbable = node.grabbable();
+        let grabbable = getNodePositionData(node, s).grabbable = node.grabbable();
 
-        if( grabbable ){
+        if (grabbable) {
           node.ungrabify();
         }
       };
 
       let regrabify = node => {
-        if( !s.ungrabifyWhileSimulating ){ return; }
+        if (!s.ungrabifyWhileSimulating) { return; }
 
-        let grabbable = getNodePositionData( node, s ).grabbable;
+        let grabbable = getNodePositionData(node, s).grabbable;
 
-        if( grabbable ){
+        if (grabbable) {
           node.grabify();
         }
       };
 
-      let updateGrabState = node => getNodePositionData( node, s ).grabbed = node.grabbed();
+      let updateGrabState = node => getNodePositionData(node, s).grabbed = node.grabbed();
 
-      let onGrab = function({ target }){
-        updateGrabState( target );
+      let onGrab = function ({ target }) {
+        updateGrabState(target);
       };
 
       let onFree = onGrab;
 
-      let onDrag = function({ target }){
-        let p = getNodePositionData( target, s );
+      let onDrag = function ({ target }) {
+        let p = getNodePositionData(target, s);
         let tp = target.position();
 
         p.x = tp.x;
@@ -110,30 +107,30 @@ class Layout {
       };
 
       let fit = () => {
-        if( s.fit && s.animateContinuously ){
-          s.cy.fit( s.padding );
+        if (s.fit && s.animateContinuously) {
+          s.cy.fit(s.padding);
         }
       };
 
       let onNotDone = () => {
-        refreshPositions( s.nodes, s );
+        refreshPositions(s.nodes, s);
         fit();
 
-        requestAnimationFrame( frame );
+        requestAnimationFrame(frame);
       };
 
-      let frame = function(){
-        multitick( s, onNotDone, onDone );
+      let frame = function () {
+        multitick(s, onNotDone, onDone);
       };
 
       let onDone = () => {
-        refreshPositions( s.nodes, s );
+        refreshPositions(s.nodes, s);
         fit();
 
-        s.nodes.forEach( n => {
-          regrabify( n );
-          unlistenToGrab( n );
-        } );
+        s.nodes.forEach(n => {
+          regrabify(n);
+          unlistenToGrab(n);
+        });
 
         s.running = false;
 
@@ -142,46 +139,44 @@ class Layout {
 
       l.emit('layoutstart');
 
-      s.nodes.forEach( n => {
-        ungrabify( n );
-        listenToGrab( n );
-      } );
+      s.nodes.forEach(n => {
+        ungrabify(n);
+        listenToGrab(n);
+      });
 
       frame(); // kick off
     } else {
       let done = false;
-      let onNotDone = () => {};
+      let onNotDone = () => { };
       let onDone = () => done = true;
 
-      while( !done ){
-        multitick( s, onNotDone, onDone );
+      while (!done) {
+        multitick(s, onNotDone, onDone);
       }
 
-      s.eles.layoutPositions( this, s, node => {
-        let pd = getNodePositionData( node, s );
+      s.eles.layoutPositions(this, s, node => {
+        let pd = getNodePositionData(node, s);
 
         return { x: pd.x, y: pd.y };
-      } );
+      });
     }
 
-    l.postrun( s );
+    l.postrun(s);
 
     return this; // chaining
   }
 
-  prerun(){}
-  postrun(){}
-  tick(){}
+  prerun() { }
+  postrun() { }
+  tick() { }
 
-  stop(){
+  stop() {
     this.state.running = false;
 
     return this; // chaining
   }
 
-  destroy(){
+  destroy() {
     return this; // chaining
   }
 }
-
-module.exports = Layout;

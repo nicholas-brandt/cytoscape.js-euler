@@ -2,27 +2,27 @@
 The implementation of the Euler layout algorithm
 */
 
-const Layout = require('../layout');
-const assign = require('../assign');
-const defaults = require('./defaults');
-const { tick } = require('./tick');
-const { makeQuadtree } = require('./quadtree');
-const { makeBody } = require('./body');
-const { makeSpring } = require('./spring');
+import Layout from '../layout/index';
+import assign from '../assign';
+import defaults from './defaults';
+import { tick } from './tick';
+import { makeQuadtree } from './quadtree/index';
+import { makeBody } from './body';
+import { makeSpring } from './spring';
 const isFn = fn => typeof fn === 'function';
 const isParent = n => n.isParent();
 const notIsParent = n => !isParent(n);
 const isLocked = n => n.locked();
 const notIsLocked = n => !isLocked(n);
-const isParentEdge = e => isParent( e.source() ) || isParent( e.target() );
+const isParentEdge = e => isParent(e.source()) || isParent(e.target());
 const notIsParentEdge = e => !isParentEdge(e);
 const getBody = n => n.scratch('euler').body;
-const getNonParentDescendants = n => isParent(n) ? n.descendants().filter( notIsParent ) : n;
+const getNonParentDescendants = n => isParent(n) ? n.descendants().filter(notIsParent) : n;
 
 const getScratch = el => {
   let scratch = el.scratch('euler');
 
-  if( !scratch ){
+  if (!scratch) {
     scratch = {};
 
     el.scratch('euler', scratch);
@@ -31,20 +31,20 @@ const getScratch = el => {
   return scratch;
 };
 
-const optFn = ( opt, ele ) => {
-  if( isFn( opt ) ){
-    return opt( ele );
+const optFn = (opt, ele) => {
+  if (isFn(opt)) {
+    return opt(ele);
   } else {
     return opt;
   }
 };
 
 class Euler extends Layout {
-  constructor( options ){
-    super( assign( {}, defaults, options ) );
+  constructor(options) {
+    super(assign({}, defaults, options));
   }
 
-  prerun( state ){
+  prerun(state) {
     let s = state;
 
     s.quadtree = makeQuadtree();
@@ -52,12 +52,12 @@ class Euler extends Layout {
     let bodies = s.bodies = [];
 
     // regular nodes
-    s.nodes.filter( n => notIsParent(n) ).forEach( n => {
-      let scratch = getScratch( n );
+    s.nodes.filter(n => notIsParent(n)).forEach(n => {
+      let scratch = getScratch(n);
 
       let body = makeBody({
         pos: { x: scratch.x, y: scratch.y },
-        mass: optFn( s.mass, n ),
+        mass: optFn(s.mass, n),
         locked: scratch.locked
       });
 
@@ -67,55 +67,55 @@ class Euler extends Layout {
 
       body._scratch = scratch;
 
-      bodies.push( body );
-    } );
+      bodies.push(body);
+    });
 
     let springs = s.springs = [];
 
     // regular edge springs
-    s.edges.filter( notIsParentEdge ).forEach( e => {
+    s.edges.filter(notIsParentEdge).forEach(e => {
       let spring = makeSpring({
-        source: getBody( e.source() ),
-        target: getBody( e.target() ),
-        length: optFn( s.springLength, e ),
-        coeff: optFn( s.springCoeff, e )
+        source: getBody(e.source()),
+        target: getBody(e.target()),
+        length: optFn(s.springLength, e),
+        coeff: optFn(s.springCoeff, e)
       });
 
       spring._cyEdge = e;
 
-      let scratch = getScratch( e );
+      let scratch = getScratch(e);
 
       spring._scratch = scratch;
 
       scratch.spring = spring;
 
-      springs.push( spring );
-    } );
+      springs.push(spring);
+    });
 
     // compound edge springs
-    s.edges.filter( isParentEdge ).forEach( e => {
-      let sources = getNonParentDescendants( e.source() );
-      let targets = getNonParentDescendants( e.target() );
+    s.edges.filter(isParentEdge).forEach(e => {
+      let sources = getNonParentDescendants(e.source());
+      let targets = getNonParentDescendants(e.target());
 
       // just add one spring for perf
-      sources = [ sources[0] ];
-      targets = [ targets[0] ];
+      sources = [sources[0]];
+      targets = [targets[0]];
 
-      sources.forEach( src => {
-        targets.forEach( tgt => {
-          springs.push( makeSpring({
-            source: getBody( src ),
-            target: getBody( tgt ),
-            length: optFn( s.springLength, e ),
-            coeff: optFn( s.springCoeff, e )
-          }) );
-        } );
-      } );
-    } );
+      sources.forEach(src => {
+        targets.forEach(tgt => {
+          springs.push(makeSpring({
+            source: getBody(src),
+            target: getBody(tgt),
+            length: optFn(s.springLength, e),
+            coeff: optFn(s.springCoeff, e)
+          }));
+        });
+      });
+    });
   }
 
-  tick( state ){
-    let movement = tick( state );
+  tick(state) {
+    let movement = tick(state);
 
     let isDone = movement <= state.movementThreshold;
 
@@ -123,4 +123,4 @@ class Euler extends Layout {
   }
 }
 
-module.exports = Euler;
+export default Euler;

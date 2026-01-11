@@ -1,6 +1,6 @@
-const assign = require('../assign');
+import assign from '../assign';
 
-let setInitialPositionState = function( node, state ){
+export let setInitialPositionState = function( node, state ){
   let p = node.position();
   let bb = state.currentBoundingBox;
   let scratch = node.scratch( state.name );
@@ -22,11 +22,11 @@ let setInitialPositionState = function( node, state ){
   scratch.locked = node.locked();
 };
 
-let getNodePositionData = function( node, state ){
+export let getNodePositionData = function( node, state ){
   return node.scratch( state.name );
 };
 
-let refreshPositions = function( nodes, state ){
+export let refreshPositions = function( nodes, state ){
   nodes.positions(function( node ){
     let scratch = node.scratch( state.name );
 
@@ -36,5 +36,3 @@ let refreshPositions = function( nodes, state ){
     };
   });
 };
-
-module.exports = { setInitialPositionState, getNodePositionData, refreshPositions };

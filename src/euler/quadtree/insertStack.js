@@ -1,4 +1,4 @@
-module.exports = InsertStack;
+export default InsertStack;
 
 /**
  * Our implmentation of QuadTree is non-recursive to avoid GC hit

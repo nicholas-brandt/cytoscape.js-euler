@@ -1,6 +1,6 @@
 // use euler method for force integration http://en.wikipedia.org/wiki/Euler_method
 // return sum of squared position deltas
-function integrate( bodies, timeStep ){
+export function integrate( bodies, timeStep ){
   var dx = 0, tx = 0,
       dy = 0, ty = 0,
       i,
@@ -44,5 +44,3 @@ function integrate( bodies, timeStep ){
 
   return (tx * tx + ty * ty)/max;
 }
-
-module.exports = { integrate };
